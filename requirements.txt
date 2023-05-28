@@ -1,5 +1,4 @@
 Flask==2.0.1
-opencv-python-headless==4.5.3.56
-numpy==1.21.0
+opencv-python==4.5.3.56
+numpy==1.21.1
 tensorflow==2.5.0
-winsound==0.5
