@@ -6,30 +6,13 @@ import time
 import tensorflow as tf
 from tensorflow import keras
 import platform
+import winsound
 
 app = Flask(__name__)
 app.template_folder = 'templates'
 
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
 model = keras.models.load_model('my_model (1).h5')
-
-def autoplay_audio(file_path: str):
-    with open(file_path, "rb") as f:
-        data = f.read()
-        b64 = base64.b64encode(data).decode()
-        audio_html = f"""
-            <audio id="audio" autoplay="autoplay" loop="loop">
-                <source src="data:audio/mp3;base64,{b64}" type="audio/mp3">
-            </audio>
-            <script>
-                var audioElement = document.getElementById('audio');
-                audioElement.addEventListener('ended', function() {{
-                    this.currentTime = 0;
-                    this.play();
-                }}, false);
-            </script>
-            """
-        return audio_html
 
 def generate_frames():
     while True:
@@ -77,20 +60,18 @@ def generate_frames():
                    b'--frame\r\n'
                    b'Content-Type: image/jpeg\r\n\r\n' + img4 + b'\r\n\r\n')
             print(e1,e2)
-            if e1 != 1 and e2 != 1:
-                file_path = "bleep-41488.mp3"
-                audio_html = autoplay_audio(file_path)
-                yield audio_html.encode()
-
+            if e1 == 1 or e2 == 1:
+                winsound.Beep(1000, 500)  # Play beep sound if eyes are closed
+        
         except:
             continue
     
     cap.release()
 
+
 @app.route('/')
 def index():
-    audio_html = autoplay_audio("bleep-41488.mp3")
-    return render_template('index.html', audio_html=audio_html)
+    return render_template('index.html')
 
 @app.route('/video_feed')
 def video_feed():
